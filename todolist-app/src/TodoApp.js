@@ -1,126 +1,135 @@
 import React from "react";
-import Header from "./Header";
-import Footer from "./Footer";
-import ReactDOM from "react-dom/client";
-import App from "./App";
+import './App.css';
+import Header from './Header';
+import Footer from './Footer';
+
 class TodoApp extends React.Component {
+    openModal = () => this.setState({open: true});
+    closeModal = () => this.setState({open: false});
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             items: [
-                { id: 1, text: 'Learn JavaScript', done: false },
-                { id: 2, text: 'Learn React', done: false },
-                { id: 3, text: 'Play around in JSFiddle', done: true },
-                { id: 4, text: 'Build something awesome', done: true },
+                { text: "Learn JavaScript", isChecked: false },
+                { text: "Learn React", isChecked: false },
+                { text: "Play around in JSFiddle", isChecked: true },
+                { text: "Build something awesome", isChecked: true }
             ],
-            searchText: '',
+            inputTask: "Une tâche",
+            searchTxt: "",
+            open: false
         };
-        this.changeCheck = this.changeCheck.bind(this);
-        this.delTask = this.delTask.bind(this);
         this.addTask = this.addTask.bind(this);
-        this.getTotalTasks = this.getTotalTasks.bind(this);
-        this.getRemainingTasks = this.getRemainingTasks.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
-        this.changeOrder = this.changeOrder.bind(this);
+        this.handleInput = this.handleInput.bind(this);
     }
 
-    getTotalTasks() {
-        return this.state.items.length;
+    componentDidMount() {
+        const storedItems = localStorage.getItem("todoItems");
+        if (storedItems) {
+            this.setState({ items: JSON.parse(storedItems) });
+        }
     }
 
-    getRemainingTasks() {
-        return this.state.items.filter((item) => !item.done).length;
-    }
-
-    handleSearch(searchText) {
-        this.setState({ searchText });
+    componentDidUpdate() {
+        localStorage.setItem("todoItems", JSON.stringify(this.state.items));
     }
 
     render() {
         const filteredItems = this.state.items.filter((item) =>
-            item.text.toLowerCase().includes(this.state.searchText.toLowerCase())
+            item.text.toLowerCase().includes(this.state.searchTxt.toLowerCase())
         );
-
         return (
-            <div>
-                <Header //doit etre dans un fichier different
-                    totalTasks={this.getTotalTasks()}
-                    remainingTasks={this.getRemainingTasks()}
+            <div className="container">
+                <Header
+                    totalTasks={this.state.items.length}
+                    remainingTasks={this.state.items.filter((item) => !item.isChecked).length}
                 />
-                <h2>Todos:</h2>
-                <ol>
-                    {filteredItems.map((item, index) => (
-                        <li key={item.id}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    onClick={() => this.changeCheck(item.id)}
-                                    checked={item.done}
-                                />
-                                <span className={item.done ? 'done' : ''}>{item.text}</span>
-                                <button onClick={() => this.delTask(item.id)}>-</button>
-                                {index > 0 && (
-                                    <button onClick={() => this.changeOrder(index, index - 1)}>
-                                        ⬆️
-                                    </button>
-                                )}
-                                {index < filteredItems.length - 1 && (
-                                    <button onClick={() => this.changeOrder(index, index + 1)}>
-                                        ⬇️
-                                    </button>
-                                )}
-                            </label>
-                        </li>
-                    ))}
-                </ol>
-                <Footer //doit etre dans un fichier different
+                <h2>Tasks:</h2>
+                <div className="taskList">
+                    <ol>
+                        {filteredItems.map((item, index) => (
+                            <li key={index}>
+                                <div className="btnDiv">
+                                    <button className="order" onClick={() => this.moveTaskUp(index)}>⬆</button>
+                                    <button className="order" onClick={() => this.moveTaskDown(index)}>⬇</button>
+                                    <button className="delete" onClick={() => this.delTask(index)}>🗑️</button>
+                                </div>
+                                <input className="checkBox" type="checkbox" readOnly
+                                       checked={item.isChecked} onChange={() => this.changeIsChecked(index)}/>
+
+                                <span className={item.isChecked ? "isChecked" : ""}>{item.text}</span>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+
+                <Footer
                     addTask={this.addTask}
-                    onSearch={this.handleSearch}
-                    searchText={this.state.searchText}
+                    searchTxt={this.state.searchTxt}
+                    open={this.state.open}
+                    openModal={this.openModal}
+                    closeModal={this.closeModal}
+                    handleSearch={this.handleSearch}
+                    handleInput={this.handleInput}
                 />
             </div>
-        );
+        )
+    }
+
+    handleInput(event) {
+        this.setState({inputTask: event.target.value});
+    }
+
+    changeIsChecked(index) {
+        const updatedItems = [...this.state.items];
+        updatedItems[index].isChecked = !updatedItems[index].isChecked;
+        this.setState({ items: updatedItems });
     }
 
     delTask(id) {
-        if (window.confirm('Etes-vous sûr de vouloir supprimer cette tâche ?')) {
-            this.setState((prevState) => ({
-                items: prevState.items.filter((item) => item.id !== id),
-            }));
+        if (window.confirm("Voulez-vous vraiment supprimer cette tâche ?")) {
+            const updatedItems = [...this.state.items];
+            updatedItems.splice(id, 1);
+            this.setState({ items: updatedItems });
         }
     }
 
     addTask() {
-        const taskTitle = prompt("Entrez le titre de la nouvelle tâche :");
-        if (taskTitle) {
-            const newItem = {
-                id: Date.now(),
-                text: taskTitle,
-                done: false
-            };
-            this.setState(prevState => ({
-                items: [...prevState.items, newItem]
-            }));
-        }
-    }
-
-    changeCheck(id) {
-        this.setState((prevState) => ({
-            items: prevState.items.map((item) =>
-                item.id === id ? { ...item, done: !item.done } : item
-            ),
+        this.setState(previousState => ({
+            items : [...previousState.items,{text : this.state.inputTask, isChecked:false}]
         }));
     }
 
-    changeOrder(currentIndex, newIndex) {
-        this.setState((prevState) => {
-            const items = [...prevState.items];
-            const movedItem = items.splice(currentIndex, 1)[0];
-            items.splice(newIndex, 0, movedItem);
-            return { items };
-        });
+    handleSearch(event) {
+        this.setState({ searchTxt: event.target.value });
     }
+
+    moveTaskUp = (id) => {
+        if (id > 0) {
+            this.setState(prevState => {
+                const newItems = [...prevState.items];
+                const temp = newItems[id];
+                newItems[id] = newItems[id - 1];
+                newItems[id - 1] = temp;
+                return { items: newItems };
+            });
+        }
+    }
+
+    moveTaskDown = (id) => {
+        if (id < this.state.items.length - 1) {
+            this.setState(prevState => {
+                const newItems = [...prevState.items];
+                const temp = newItems[id];
+                newItems[id] = newItems[id + 1];
+                newItems[id + 1] = temp;
+                return { items: newItems };
+            });
+        }
+    }
+
 }
-
-
 export default TodoApp;

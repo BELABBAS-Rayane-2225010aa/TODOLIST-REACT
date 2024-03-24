@@ -1,38 +1,114 @@
-.App {
-  text-align: center;
+/*----------------Global-------------------*/
+
+body {
+  background: #151515;
+  padding: 1vh;
+  color: #ffffff;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+
+h2 {
+  font-weight: bold;
+  font-size: 37px;
+  color: red;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+
+/*----------------Task List-------------------*/
+
+.btnDiv {
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 15px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+
+.delete {
+  background-color: #000000;
+  border: none;
+  border-radius: 15px;
+  height: 30px;
+  width: 30px;
+  margin-left: 40px;
+}
+
+.order {
+  background-color: #efd6d6;
+  border: none;
+  border-radius: 20px;
+  height: 30px;
+  width: 30px;
+  margin-left: 10px;
+}
+
+li {
+  margin: 0.5vw;
+  justify-content: center;
+  align-items: center;
+  background-color: #ab6666;
+  display: inline-block;
+  padding: 10px;
+  vertical-align: middle;
+  border-radius: 15px;
+  border: black 1px solid;
+  height: 150px;
+  width: 150px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+
+/*----------------Footer-------------------*/
+
+.footerDiv {
+  background-color: #151515;
+  margin-top: 150px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+  border-radius: 20px;
+  height: 40px;
+}
+
+.searchBar {
+  border: none;
+  border-radius: 20px;
+  text-align: center;
+  padding: 5px;
+  width: 300px;
+  font-size: 20px;
+  margin-bottom: 50px;
+}
+
+.btnAddTask {
+  border: none;
+  border-radius: 100px;
+  background-color: #8f0b0b;
   color: white;
+  padding: 20px;
+  width: 250px;
+  margin-bottom: 25px;
 }
 
-.App-link {
-  color: #61dafb;
+.inputAddTask {
+  border: none;
+  border-radius: 20px;
+  text-align: center;
+  height: 25px;
+  width: 200px;
+  font-size: 20px;
+  margin-bottom: 35px;
+  margin-top: 60px;
+  max-width: 90vw;
+  background-color: #c2b5b5;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.buttonModal {
+  border: none;
+  border-radius: 15px;
+  width: 100px;
+  height: 30px;
+  margin-bottom: 10px;
+  background-color: #dcdada;
 }
